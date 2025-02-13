@@ -68,8 +68,10 @@ Environment
     sudo apt-get install fzf
 
   tmux
-    download and extract latest tmux-xxx.tar.gz at https://github.com/tmux/tmux/releases
     sudo apt install libevent-dev libncurses-dev
+    wget https://github.com/tmux/tmux/releases/download/3.4/tmux-3.4.tar.gz
+    tar -xvzf tmux-3.4.tar.gz
+    cd tmux-3.4
     ./configure && make && sudo make install
 
   wezterm with ligatures support
