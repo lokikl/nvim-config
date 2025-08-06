@@ -52,9 +52,10 @@ ${content}
     console.log(\"hello world\");
     \`\`\`
   "
-  # echo "$prompt"
+  # Create a JSON payload with the user prompt and max tokens
   json=$(jq -n --arg content "$prompt" '{messages: [{role: "user", content: $content}], max_tokens: 1024}')
 
+  # Send a POST request to the vLLM API and extract the response content
   out=$(
     curl -s -X POST \
       "${vllm}/v1/chat/completions" \
@@ -62,6 +63,8 @@ ${content}
       -H 'Content-Type: application/json' \
       -d "$json" | jq -r '.choices[0].message.content'
   )
+
+  # remove the first and last line to return (extract code from the markdown code block)
   echo "$out" | sed '1d;$d'
 }
 
