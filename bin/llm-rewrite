@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+
+if [[ "$4" = "" ]]; then
+  echo "Usage: llm-rewrite <filepath> <filetype> <startln> <endln>"
+  exit 0
+fi
+
+filepath="$1"
+filetype="$2"
+startln="$3"
+endln="$4"
+
+echo "Enter your prompt (Ctrl+D to finish):"
+userquery=$(cat)
+echo "$text"
+
+vllm="https://askgenie-api.oagpuservices.com"
+filename=$(basename "$filepath")
+
+content=$(sed -n "${startln},${endln}p" "$filepath")
+
+gen() {
+  prompt="
+    You are an expert of programming. Your task is to assists the user to enhance their code.
+
+    File name: ${filename}
+    Programming language: ${filetype}
+
+    *User highlighted code snippet*:
+    <code>
+${content}
+    </code>
+
+    *User query*:
+    <user_query>
+      ${userquery}
+    </user_query>
+
+    *Instructions*:
+    1. Output the revised code in a codeblock.
+    2. Output only the code, but nothing else. Do not output any thinking process and explanation.
+    3. Align to the coding style that user submitted as much as you can.
+    4. Your output code will be used to replace the user submitted code directly, so mind the indentation and scoping.
+
+    *Example*:
+    \`\`\`python
+    print \"hello world\"
+    \`\`\`
+
+    *Example*:
+    \`\`\`javascript
+    console.log(\"hello world\");
+    \`\`\`
+  "
+  # echo "$prompt"
+  json=$(jq -n --arg content "$prompt" '{messages: [{role: "user", content: $content}], max_tokens: 1024}')
+
+  out=$(
+    curl -s -X POST \
+      "${vllm}/v1/chat/completions" \
+      -H 'accept: application/json' \
+      -H 'Content-Type: application/json' \
+      -d "$json" | jq -r '.choices[0].message.content'
+  )
+  echo "$out" | sed '1d;$d'
+}
+
+echo "generating code..."
+code=$(gen "$userquery")
+
+# echo filepath = $filepath, filetype = $filetype
+# echo startln = $startln, endln = $endln
+# echo code = "$code"
+# sleep 5
+
+# Create a temporary file to store the code to be inserted
+tmpfile=$(mktemp)
+echo "$code" > "$tmpfile"
+
+# Create a backup of the original file
+backupfile=$(mktemp)
+cp "$filepath" "$backupfile"
+
+# Replace the specified lines in the file with the contents of the temporary file
+sed -i -e "${startln},${endln}d" -e "$((startln - 1))r ${tmpfile}" "$filepath"
+rm "$tmpfile"
+
+# Compare the modified file with the backup
+diffuse "$backupfile" "$filepath"
+rm "$backupfile"
