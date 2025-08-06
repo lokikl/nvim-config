@@ -5,6 +5,12 @@ if [[ "$4" = "" ]]; then
   exit 0
 fi
 
+if ! command -v diffuse &> /dev/null; then
+  echo "Command diffuse is required but missing"
+  any-key
+  exit 0
+fi
+
 filepath="$1"
 filetype="$2"
 startln="$3"
@@ -53,7 +59,12 @@ ${content}
     \`\`\`
   "
   # Create a JSON payload with the user prompt and max tokens
-  json=$(jq -n --arg content "$prompt" '{messages: [{role: "user", content: $content}], max_tokens: 1024}')
+  json=$(jq -n --arg content "$prompt" '{
+    messages: [{role: "user", content: $content}],
+    max_tokens: 256,
+    temperature: 0.7,
+    top_p: 0.8,
+  }')
 
   # Send a POST request to the vLLM API and extract the response content
   out=$(
@@ -68,26 +79,26 @@ ${content}
   echo "$out" | sed '1d;$d'
 }
 
+replace_code_in_file() {
+  local filepath=$1 startln=$2 endln=$3 code=$4
+
+  # Create a temporary file to store the code to be inserted
+  tmpfile=$(mktemp)
+  echo "$code" > "$tmpfile"
+
+  # Create a backup of the original file
+  backupfile=$(mktemp)
+  cp "$filepath" "$backupfile"
+
+  # Replace the specified lines in the file with the contents of the temporary file
+  sed -i -e "${startln},${endln}d" -e "$((startln - 1))r ${tmpfile}" "$filepath"
+  rm "$tmpfile"
+
+  # Compare the modified file with the backup
+  diffuse "$backupfile" "$filepath"
+  rm "$backupfile"
+}
+
 echo "generating code..."
 code=$(gen "$userquery")
-
-# echo filepath = $filepath, filetype = $filetype
-# echo startln = $startln, endln = $endln
-# echo code = "$code"
-# sleep 5
-
-# Create a temporary file to store the code to be inserted
-tmpfile=$(mktemp)
-echo "$code" > "$tmpfile"
-
-# Create a backup of the original file
-backupfile=$(mktemp)
-cp "$filepath" "$backupfile"
-
-# Replace the specified lines in the file with the contents of the temporary file
-sed -i -e "${startln},${endln}d" -e "$((startln - 1))r ${tmpfile}" "$filepath"
-rm "$tmpfile"
-
-# Compare the modified file with the backup
-diffuse "$backupfile" "$filepath"
-rm "$backupfile"
+replace_code_in_file "$filepath" "$startln" "$endln" "$code"
