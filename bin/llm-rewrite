@@ -16,14 +16,16 @@ filetype="$2"
 startln="$3"
 endln="$4"
 
+content=$(sed -n "${startln},${endln}p" "$filepath")
+indentation_level=$(echo "$content" | sed -n '1{s/[^[:space:]].*//p;q}' | wc -c)
+indentation_level=$((indentation_level - 1))
+
 echo "Enter your prompt (Ctrl+D to finish):"
 userquery=$(cat)
 echo "$text"
 
 vllm="https://askgenie-api.oagpuservices.com"
 filename=$(basename "$filepath")
-
-content=$(sed -n "${startln},${endln}p" "$filepath")
 
 gen() {
   prompt="
@@ -34,7 +36,7 @@ gen() {
 
     *User highlighted code snippet*:
     <code>
-${content}
+      ${content}
     </code>
 
     *User query*:
@@ -83,11 +85,13 @@ replace_code_in_file() {
   local filepath=$1 startln=$2 endln=$3 code=$4
 
   # Create a temporary file to store the code to be inserted
-  tmpfile=$(mktemp)
-  echo "$code" > "$tmpfile"
+  local tmpfile=$(mktemp)
+
+  # Indent the code and write it to a temporary file
+  echo "$code" | sed "s/^/$(printf '%*s' $indentation_level '')/" > "$tmpfile"
 
   # Create a backup of the original file
-  backupfile=$(mktemp)
+  local backupfile=$(mktemp)
   cp "$filepath" "$backupfile"
 
   # Replace the specified lines in the file with the contents of the temporary file

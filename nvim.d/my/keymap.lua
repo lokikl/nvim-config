@@ -97,7 +97,7 @@ cancel("c", {"<esc>", "<del>"})
 vim.cmd "source ~/.config/nvim/lua/keymap.vim"
 
 -- llm code rewrite
-vim.keymap.set("x", "<c-p>", function()
+vim.keymap.set("x", "<c-r>", function()
   -- Get the current file path and type
   local file_path = vim.fn.expand("%:p")
   local file_type = vim.bo.filetype
