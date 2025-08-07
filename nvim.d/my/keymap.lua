@@ -106,6 +106,9 @@ vim.keymap.set("x", "<c-r>", function()
   local start_line = math.min(vim.fn.line("v"), vim.fn.line("."))
   local end_line = math.max(vim.fn.line("v"), vim.fn.line("."))
 
+  -- Save the current scroll position and cursor line
+  local scroll_pos = vim.fn.winsaveview()
+
   -- Exit visual mode
   vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", true)
 
@@ -117,6 +120,9 @@ vim.keymap.set("x", "<c-r>", function()
 
   -- Reload the current file to reflect any changes
   vim.cmd("edit")
+
+  -- Restore the scroll position and cursor line
+  vim.fn.winrestview(scroll_pos)
 end, { noremap = true, silent = true })
 
 -- llm code ask

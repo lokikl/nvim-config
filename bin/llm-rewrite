@@ -23,6 +23,12 @@ filepath="$1"
 filetype="$2"
 startln="$3"
 endln="$4"
+guide="no coding guide is provided"
+guidefile=".devbase/guides/${filetype}.md"
+
+if [[ -f "$guidefile" ]]; then
+  guide=$(cat "$guidefile")
+fi
 
 # Extract the content between the specified line numbers from the file
 content=$(sed -n "${startln},${endln}p" "$filepath")
@@ -77,8 +83,8 @@ gen() {
     \`\`\`
   "
   # Create a JSON payload with the user prompt and max tokens
-  json=$(jq -n --arg content "$prompt" '{
-    messages: [{role: "user", content: $content}],
+  json=$(jq -n --arg guide "$guide" --arg content "$prompt" '{
+    messages: [{role: "user", content: $guide},{role: "user", content: $content}],
     max_tokens: 512,
     temperature: 0.7,
     top_p: 0.8,
