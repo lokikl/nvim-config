@@ -26,9 +26,32 @@ endln="$4"
 guide="no coding guide is provided"
 guidefile=".devbase/guides/${filetype}.md"
 
-if [[ -f "$guidefile" ]]; then
-  guide=$(cat "$guidefile")
-fi
+get_guide() {
+  # Check if the guide file exists
+  if [[ -f "$guidefile" ]]; then
+    # Read the content of the guide file
+    local guidecontent=$(cat "$guidefile")
+    guide="$guidecontent"
+
+    # Replace "#include <relative path>" with the file content
+    while IFS= read -r line; do
+      # Check if the line starts with "#include "
+      if [[ $line =~ ^'#include ' ]]; then
+        # Extract the file path from the "#include " line
+        local filepath=$(echo "$line" | sed -r 's/.*#include (.*)/\1/')
+        # Check if the included file exists
+        if [[ -f "$filepath" ]]; then
+          # Read the content of the included file
+          local linkcontent=$(cat "$filepath")
+          # Replace the "#include " line with the included file content
+          guide=${guide//$line/$linkcontent}
+        fi
+      fi
+    done <<< "$guidecontent"
+  fi
+}
+
+get_guide
 
 # Extract the content between the specified line numbers from the file
 content=$(sed -n "${startln},${endln}p" "$filepath")
