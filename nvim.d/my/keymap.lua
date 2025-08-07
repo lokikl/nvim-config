@@ -119,3 +119,24 @@ vim.keymap.set("x", "<c-r>", function()
   vim.cmd("edit")
 end, { noremap = true, silent = true })
 
+-- llm code ask
+vim.keymap.set("x", "<c-q>", function()
+  -- Get the current file path and type
+  local file_path = vim.fn.expand("%:p")
+  local file_type = vim.bo.filetype
+
+  -- Determine the start and end lines of the visual selection
+  local start_line = math.min(vim.fn.line("v"), vim.fn.line("."))
+  local end_line = math.max(vim.fn.line("v"), vim.fn.line("."))
+
+  -- Exit visual mode
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", true)
+
+  -- Construct the CLI command for llm-rewrite
+  local cli = "llm-ask '" .. file_path .. "' '" .. file_type .. "' " .. start_line .. " " .. end_line
+
+  -- Run the CLI command in a popup
+  -- send.run_popup(cli)
+  exec_in_split(cli)
+end, { noremap = true, silent = true })
+
