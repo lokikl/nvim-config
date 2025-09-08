@@ -62,3 +62,16 @@ snippet writefile
 	def writefile(path, content):
 			with open(path, 'w') as file:
 					file.write(content)
+snippet cp
+	import shutil
+
+	def copy_file(src_path, dst_path):
+			try:
+					shutil.copy(src_path, dst_path)
+					print(f"File copied successfully from {src_path} to {dst_path}")
+			except FileNotFoundError:
+					print(f"Error: File not found at {src_path}")
+			except PermissionError:
+					print(f"Error: Permission denied to read {src_path} or write to {dst_path}")
+			except Exception as e:
+					print(f"An error occurred: {e}")
