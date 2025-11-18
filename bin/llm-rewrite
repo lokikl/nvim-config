@@ -68,7 +68,7 @@ userquery=$(cat)
 echo "$text"
 
 # Define the vllm API endpoint URL
-vllm="https://askgenie-api.oagpuservices.com"
+vllm="https://llm.oasishpc.hk"
 # Extract the filename from the filepath
 filename=$(basename "$filepath")
 
@@ -119,6 +119,7 @@ gen() {
       "${vllm}/v1/chat/completions" \
       -H 'accept: application/json' \
       -H 'Content-Type: application/json' \
+      -H 'X-API-KEY: h9nswfH95gOBk5MmlViRw-6-Jh_swzEc6p-VIBHTQcQ' \
       -d "$json" | jq -r '.choices[0].message.content'
   )
 
