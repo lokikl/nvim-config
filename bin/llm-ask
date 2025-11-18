@@ -61,6 +61,7 @@ gen() {
   "
   # Create a JSON payload with the user prompt and max tokens
   json=$(jq -n --arg content "$prompt" '{
+    model: "llama4-maverick",
     messages: [{role: "user", content: $content}],
     max_tokens: 512,
     temperature: 0.7,
