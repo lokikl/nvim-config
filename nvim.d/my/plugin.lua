@@ -183,7 +183,7 @@ packer.startup(function(use, use_rocks)
   }
   -- use "williamboman/nvim-lsp-installer"
   use "b0o/schemastore.nvim"
-  use "jose-elias-alvarez/null-ls.nvim"
+   use "nvimtools/none-ls.nvim"
 
   -- Telescope
   -- download and install ripgrep deb from https://github.com/BurntSushi/ripgrep/releases
@@ -204,7 +204,7 @@ packer.startup(function(use, use_rocks)
   use 'kyazdani42/nvim-tree.lua'
 
   -- Tabline / Statusline
-  use "ojroques/nvim-hardline"
+  -- use "ojroques/nvim-hardline"
   -- use "romgrk/barbar.nvim"
   use {'akinsho/bufferline.nvim', tag = "*", requires = 'kyazdani42/nvim-web-devicons'}
 
