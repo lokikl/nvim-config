@@ -64,6 +64,7 @@ packer.startup(function(use, use_rocks)
 
   use "wbthomason/packer.nvim"          -- Have packer manage itself
   use "nvim-lua/popup.nvim"             -- An implementation of the Popup API from vim in Neovim
+  use "mattn/emmet-vim"
   use "nvim-lua/plenary.nvim"           -- Useful lua functions used ny lots of plugins
   use 'antoinemadec/FixCursorHold.nvim'
   use "tpope/vim-repeat"
