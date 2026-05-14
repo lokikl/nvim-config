@@ -223,9 +223,8 @@ packer.startup(function(use, use_rocks)
   vim.cmd [[let g:VM_maps['Skip Region'] = '<C-x>']]
   vim.cmd [[let g:VM_maps['Exit'] = '<C-c>']]
   -- use "mg979/vim-visual-multi"
-  use "bronson/vim-trailing-whitespace"    -- try if this can be replaced by lsp auto format
-  use "numToStr/Comment.nvim"
-  use "tpope/vim-surround"   -- manage surrounding characters like (abc) -> [abc] : cs([
+   use "bronson/vim-trailing-whitespace"    -- try if this can be replaced by lsp auto format
+   use "tpope/vim-surround"   -- manage surrounding characters like (abc) -> [abc] : cs([
   -- crs: snake_case
   -- crm: MixedCase
   -- crc: camelCase
