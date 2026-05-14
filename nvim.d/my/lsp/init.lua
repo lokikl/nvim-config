@@ -21,11 +21,13 @@ if not ok5 then return end
 mason.setup()
 masonlsp.setup {
   ensure_installed = { "eslint", "bashls", "pyright" },
-  handlers = {
-    function(server_name)
-      require("lspconfig")[server_name].setup {}
-    end,
-    ["ruff_lsp"] = function()
+    handlers = {
+      function(server_name)
+        require("lspconfig")[server_name].setup {}
+      end,
+      ["tsserver"] = function() end,
+      ["ts_ls"] = function() end,
+      ["ruff_lsp"] = function()
       require("lspconfig").ruff_lsp.setup {
         on_attach = function(client, bufnr)
           if client.supports_method("textDocument/formatting") then
@@ -160,11 +162,34 @@ _G.toggle_lsp = function()
   if lsp_is_on == true then
     _G.turn_off_lsp()
   else
-    _G.turn_on_lsp()
+_G.LspListServers = function()
+  local clients = vim.lsp.get_clients({ bufnr = 0 })
+  if #clients == 0 then
+    print("No active LSP servers for this buffer.")
+    return
+  end
+  local names = {}
+  for _, client in ipairs(clients) do
+    table.insert(names, client.name)
+  end
+  print("Active LSP servers: " .. table.concat(names, ", "))
+end
+vim.cmd [[command! LspListServers lua LspListServers()]]
+
+_G.turn_on_lsp()
   end
 end
 
 _G.turn_on_lsp()
+
+vim.api.nvim_create_autocmd("LspAttach", {
+  callback = function(args)
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    if client and (client.name == "tsserver" or client.name == "ts_ls") then
+      client.stop()
+    end
+  end,
+})
 
 vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
   border = "rounded",
@@ -182,11 +207,9 @@ local diagnostics = null_ls.builtins.diagnostics
 null_ls.setup {
   debug = false,
   sources = {
-    formatting.prettier.with { extra_args = { } },
-    -- formatting.black.with { extra_args = { "--fast" } },
-    -- formatting.yapf,
+    -- formatting.eslint.with { extra_args = { "--fix" } },
+    formatting.black.with { extra_args = { "--fast" } },
     formatting.stylua,
-    -- diagnostics.flake8,
   },
 }
 
