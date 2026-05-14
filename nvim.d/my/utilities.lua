@@ -2,6 +2,7 @@ local status_ok, notify = pcall(require, "notify")
 if status_ok then
   notify.setup({
     timeout = 1000,
+    background_colour = "#000000",
     -- render = "minimal",
   })
   vim.notify = notify
