@@ -22,7 +22,9 @@ if [[ "$index" = "0" ]]; then
   # no opencode inside void, so user is attempting to hide a opencode
   if [[ "$process_name" != "opencode" ]]; then
     # not a opencode pane, so create a new one
-    tmux split-window "opencode -c"
+    path=`tmux display-message -p "#{pane_current_path}"`
+    # tmux display-message "$path"
+    tmux split-window -c "$path" "opencode -c"
 
     if [[ "$need_create_void" = "1" ]]; then
       tmux new-session -d -s "$void_session"
