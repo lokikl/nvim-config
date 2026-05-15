@@ -150,6 +150,10 @@ vim.keymap.set("v", "dp", function()
   M.send_current_file_path_to_next_pane()
 end, { desc = "send path:line to opencode" })
 
+vim.keymap.set("n", "do", function()
+  exec_in_split("opencode -c")
+end, { desc = "open opencode in current project folder" })
+
 M.run_popup = function(cmd)
   local cwd = vim.fn.getcwd()
   local fullcmd = "cd " .. cwd .. "; [ -f .envrc ] && source .envrc; " .. cmd
