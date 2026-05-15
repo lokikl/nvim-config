@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+tmux list-sessions -F "#{session_name}" | while read session; do
+  echo "$session"
+  tmux list-windows -t "$session" -F "  #{window_index}: #{window_name}"
+done
