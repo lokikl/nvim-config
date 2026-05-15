@@ -33,9 +33,5 @@ if ! tmux list-windows -F "#W" | grep -q "^${projName}$"; then
   tmux new-window -n $projName "$cmd"
 fi
 
-# auto create void for storing opencode panes
-void_session="${projName}_void"
-tmux has-session -t "$void_session" 2>/dev/null || tmux new-session -d -s "$void_session"
-
 # tmux switch-client
 tmux select-window -t $projName
