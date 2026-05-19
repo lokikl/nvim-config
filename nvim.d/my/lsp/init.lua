@@ -182,15 +182,6 @@ end
 
 _G.turn_on_lsp()
 
-vim.api.nvim_create_autocmd("LspAttach", {
-  callback = function(args)
-    local client = vim.lsp.get_client_by_id(args.data.client_id)
-    if client and (client.name == "tsserver" or client.name == "ts_ls") then
-      client.stop()
-    end
-  end,
-})
-
 vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
   border = "rounded",
 })
