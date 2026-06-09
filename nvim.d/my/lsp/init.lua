@@ -19,16 +19,25 @@ if not ok5 then return end
 --[[ tail -f  ~/.local/state/nvim/lsp.log ]]
 
 mason.setup()
+local lsp_capabilities = cmp_nvim_lsp.default_capabilities()
+
 masonlsp.setup {
-  ensure_installed = { "eslint", "bashls", "pyright" },
-    handlers = {
-      function(server_name)
-        require("lspconfig")[server_name].setup {}
-      end,
-      ["tsserver"] = function() end,
-      ["ts_ls"] = function() end,
-      ["ruff_lsp"] = function()
+  ensure_installed = { "eslint", "bashls", "pyright", "typescript-language-server", "prettier" },
+  handlers = {
+    function(server_name)
+      local opts = {
+        capabilities = lsp_capabilities,
+      }
+      local custom_config = nil
+      pcall(function() custom_config = require("my.lsp." .. server_name) end)
+      if custom_config then
+        opts = vim.tbl_deep_extend("force", custom_config, opts)
+      end
+      require("lspconfig")[server_name].setup(opts)
+    end,
+    ["ruff_lsp"] = function()
       require("lspconfig").ruff_lsp.setup {
+        capabilities = lsp_capabilities,
         on_attach = function(client, bufnr)
           if client.supports_method("textDocument/formatting") then
             vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
@@ -201,6 +210,12 @@ null_ls.setup {
     -- formatting.eslint.with { extra_args = { "--fix" } },
     formatting.black.with { extra_args = { "--fast" } },
     formatting.stylua,
+    formatting.prettier.with {
+      filetypes = {
+        "javascript", "javascriptreact", "typescript", "typescriptreact",
+        "json", "jsonc", "yaml", "markdown", "css", "scss", "html",
+      },
+    },
   },
 }
 
