@@ -22,7 +22,7 @@ mason.setup()
 local lsp_capabilities = cmp_nvim_lsp.default_capabilities()
 
 masonlsp.setup {
-  ensure_installed = { "eslint", "bashls", "pyright", "typescript-language-server", "prettier" },
+  ensure_installed = { "eslint", "bashls", "pyright", "ts_ls" },
   handlers = {
     function(server_name)
       local opts = {
