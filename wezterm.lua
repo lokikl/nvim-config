@@ -7,6 +7,7 @@ return {
   --
   check_for_updates = false,
   font = wezterm.font("Fantasque Sans Mono", {weight="Regular"}),
+  warn_about_missing_glyphs = false,
   -- color_scheme = "Solarized Dark - Patched",
   -- color_scheme = "Batman",
   line_height = 1.1,
