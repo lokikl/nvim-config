@@ -12,7 +12,9 @@ return {
   -- color_scheme = "Batman",
   line_height = 1.1,
   hide_tab_bar_if_only_one_tab = true,
-  use_ime = false,
+  use_ime = true,
+  -- Always maximized, so drop title bar and border entirely.
+  window_decorations = "NONE",
 
   -- WhenFollowedBySpace (default), Never, Always
   -- allow_square_glyphs_to_overflow_width = "Never",
